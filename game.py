@@ -43,9 +43,6 @@ def main():
     skyimage = ss.load_image_at((32, 96, 32, 32))
 
     up = down = left = right = running = False
-    #bg = Surface((32,32))
-    #bg.convert()
-    #bg.fill(Color("#000000"))
     entities = pygame.sprite.Group()
     player = Player(32, 32)
     platforms = []
@@ -63,7 +60,7 @@ def main():
         "P                                P",
         "P                                P",
         "P                                P",
-        "P                                P",
+        "P     E                          P",
         "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",]
 
     # build the level
@@ -73,6 +70,9 @@ def main():
                 p = Platform(x, y, groundImage)
                 platforms.append(p)
                 entities.add(p)
+            if col == "E":
+                e = Enemy(x,y)
+                entities.add(e)
             x += 32
         y += 32
         x = 0
@@ -121,9 +121,14 @@ def main():
         camera.update(player) # camera follows player. Note that we could also follow any other sprite
 
         # update player, draw everything else
-        player.update(up, down, left, right, running, platforms)
+        
+
 
         for e in entities:
+            if type(e) is Player:
+                e.update(up, down, left, right, running, platforms)
+            if type(e) is Enemy:
+                e.update(platforms)
             # apply the offset to each entity.
             # call this for everything that should scroll,
             # which is basically everything other than GUI/HUD/UI
@@ -143,6 +148,8 @@ class Player(Entity):
     def __init__(self, x, y):
         Entity.__init__(self)
         self.jumpVelocity = 10
+        self.runningSpeed = 12
+        self.walkingSpeed = 8
         self.xvel = 0
         self.yvel = 0
         self.onGround = False
@@ -158,11 +165,11 @@ class Player(Entity):
         if down:
             pass
         if running:
-            self.xvel = 12
+            self.xvel = self.runningSpeed
         if left:
-            self.xvel = -8
+            self.xvel = -self.walkingSpeed
         if right:
-            self.xvel = 8
+            self.xvel = self.walkingSpeed
         if not self.onGround:
             # only accelerate with gravity if in the air
             self.yvel += 0.3
@@ -196,6 +203,39 @@ class Player(Entity):
                     self.yvel = 0
                 if yvel < 0:
                     self.rect.top = p.rect.bottom
+
+class Enemy(Entity):
+    def __init__(self, x, y):
+        Entity.__init__(self)
+        self.walkingSpeed = 8
+        self.xvel = 0
+        self.yvel = 0
+        self.onGround = False
+        self.image = Surface((32,32))
+        self.image.fill(Color("#FF0000"))
+        self.image.convert()
+        self.rect = Rect(x, y, 32, 32)
+        self.speed = 4
+        self.xvel = self.speed
+
+    def update(self, platforms):
+        # increment in x direction
+        self.rect.left += self.xvel
+        # do x-axis collisions
+        self.collide(self.xvel, 0, platforms)
+
+    def collide(self, xvel, yvel, platforms):
+        for p in platforms:
+            if pygame.sprite.collide_rect(self, p):
+                if xvel > 0:
+                    self.rect.right = p.rect.left
+                    print("enemy collide right")
+                    self.xvel = -self.speed;
+                if xvel < 0:
+                    self.rect.left = p.rect.right
+                    print("enemy collide left")
+                    self.xvel = self.speed;
+
 
 class Camera(object):
     def __init__(self, camera_func, width, height):
