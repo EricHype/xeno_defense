@@ -46,6 +46,7 @@ def main():
     entities = pygame.sprite.Group()
     player = Player(32, 32)
     platforms = []
+    enemies = []
     x = y = 0
     level = [
         "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
@@ -72,6 +73,7 @@ def main():
                 entities.add(p)
             if col == "E":
                 e = Enemy(x,y)
+                enemies.append(e)
                 entities.add(e)
             x += 32
         y += 32
@@ -121,12 +123,9 @@ def main():
         camera.update(player) # camera follows player. Note that we could also follow any other sprite
 
         # update player, draw everything else
-        
-
-
         for e in entities:
             if type(e) is Player:
-                e.update(up, down, left, right, running, platforms)
+                e.update(up, down, left, right, running, platforms, enemies)
             if type(e) is Enemy:
                 e.update(platforms)
             # apply the offset to each entity.
@@ -158,7 +157,7 @@ class Player(Entity):
         self.image.convert()
         self.rect = Rect(x, y, 32, 32)
 
-    def update(self, up, down, left, right, running, platforms):
+    def update(self, up, down, left, right, running, platforms, enemies):
         if up:
             # only jump if on the ground
             if self.onGround: self.yvel -= self.jumpVelocity
@@ -180,15 +179,15 @@ class Player(Entity):
         # increment in x direction
         self.rect.left += self.xvel
         # do x-axis collisions
-        self.collide(self.xvel, 0, platforms)
+        self.collide(self.xvel, 0, platforms, enemies)
         # increment in y direction
         self.rect.top += self.yvel
         # assuming we're in the air
         self.onGround = False;
         # do y-axis collisions
-        self.collide(0, self.yvel, platforms)
+        self.collide(0, self.yvel, platforms, enemies)
 
-    def collide(self, xvel, yvel, platforms):
+    def collide(self, xvel, yvel, platforms, enemies):
         for p in platforms:
             if pygame.sprite.collide_rect(self, p):
                 if xvel > 0:
@@ -203,6 +202,15 @@ class Player(Entity):
                     self.yvel = 0
                 if yvel < 0:
                     self.rect.top = p.rect.bottom
+        
+        for e in enemies:
+            if pygame.sprite.collide_rect(self, e):
+                if yvel > 0:
+                    if self.rect.bottom >= p.rect.top - 3:
+                        print("enemy dead")
+                else:
+                    print("player dead") 
+                    
 
 class Enemy(Entity):
     def __init__(self, x, y):
