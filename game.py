@@ -14,6 +14,12 @@ DEPTH = 32
 FLAGS = 0
 CAMERA_SLACK = 30
 
+ENEMY_COLOR = "#FF0000"
+DEAD_COLOR = "#000000"
+
+entities = pygame.sprite.Group()
+
+
 def simple_camera(camera, target_rect):
         l, t, _, _ = target_rect # l = left,  t = top
         _, _, w, h = camera      # w = width, h = height
@@ -43,7 +49,7 @@ def main():
     skyimage = ss.load_image_at((32, 96, 32, 32))
 
     up = down = left = right = running = False
-    entities = pygame.sprite.Group()
+    #entities = pygame.sprite.Group()
     player = Player(32, 32)
     platforms = []
     enemies = []
@@ -128,10 +134,13 @@ def main():
                 e.update(up, down, left, right, running, platforms, enemies)
             if type(e) is Enemy:
                 e.update(platforms)
+            if(type(e) is SquareFragment):
+                e.update(platforms)
             # apply the offset to each entity.
             # call this for everything that should scroll,
             # which is basically everything other than GUI/HUD/UI
-            screen.blit(e.image, camera.apply(e)) 
+            if(e.isActive):
+                screen.blit(e.image, camera.apply(e)) 
 
         pygame.display.update()
 
@@ -143,10 +152,10 @@ class Entity(pygame.sprite.Sprite):
 
 
 class Player(Entity):
-
     def __init__(self, x, y):
         Entity.__init__(self)
         self.jumpVelocity = 10
+        self.bounceVelocity = 12
         self.runningSpeed = 12
         self.walkingSpeed = 8
         self.xvel = 0
@@ -156,6 +165,7 @@ class Player(Entity):
         self.image.fill(Color("#0000FF"))
         self.image.convert()
         self.rect = Rect(x, y, 32, 32)
+        self.isActive = True
 
     def update(self, up, down, left, right, running, platforms, enemies):
         if up:
@@ -204,10 +214,14 @@ class Player(Entity):
                     self.rect.top = p.rect.bottom
         
         for e in enemies:
+            if not e.isActive:
+                continue
             if pygame.sprite.collide_rect(self, e):
-                if yvel > 0:
-                    if self.rect.bottom >= p.rect.top - 3:
-                        print("enemy dead")
+                if self.yvel > 0.01:
+                    print("Self bottom: " + str(self.rect.bottom) + " enemy top: " + str(e.rect.top))
+                    if self.rect.bottom <= (e.rect.top + 12):
+                        self.yvel -= 15
+                        e.die()
                 else:
                     print("player dead") 
                     
@@ -220,19 +234,25 @@ class Enemy(Entity):
         self.yvel = 0
         self.onGround = False
         self.image = Surface((32,32))
-        self.image.fill(Color("#FF0000"))
+        self.image.fill(Color(ENEMY_COLOR))
         self.image.convert()
         self.rect = Rect(x, y, 32, 32)
         self.speed = 4
         self.xvel = self.speed
+        self.isActive = True
 
     def update(self, platforms):
+        if(not self.isActive):
+            return
         # increment in x direction
         self.rect.left += self.xvel
         # do x-axis collisions
         self.collide(self.xvel, 0, platforms)
 
     def collide(self, xvel, yvel, platforms):
+        if(not self.isActive):
+            return
+
         for p in platforms:
             if pygame.sprite.collide_rect(self, p):
                 if xvel > 0:
@@ -243,7 +263,51 @@ class Enemy(Entity):
                     self.rect.left = p.rect.right
                     print("enemy collide left")
                     self.xvel = self.speed;
+    
+    def die(self):
+        self.isActive = False
+        self.image.fill(Color("#000000"))
+        entities.add(SquareFragment(self.rect.left, self.rect.top, 16, ENEMY_COLOR, "left", 3, 5))
+        entities.add(SquareFragment(self.rect.left+16, self.rect.top, 16, ENEMY_COLOR, "right", 3, 3))
+        entities.add(SquareFragment(self.rect.left, self.rect.top+16, 16, ENEMY_COLOR, "left", 2, 5))
+        entities.add(SquareFragment(self.rect.left+16, self.rect.top+16, 16, ENEMY_COLOR, "right", 2, 3))
 
+class SquareFragment(Entity):
+    def __init__(self, x, y, size, color, direction, xvel, yvel):
+        Entity.__init__(self)
+        self.yvel = yvel
+        self.image = Surface((16,16))
+        self.image.fill(Color(color))
+        self.image.convert()
+        self.rect = Rect(x, y, size, size)
+        self.isActive = True
+        self.isMoving = True
+
+        if(direction == "left"):
+            self.xvel = -xvel
+            self.xmomentum = -2
+        if(direction == "right"):
+            self.xmomentum = 2
+            self.xvel = xvel
+
+    def update(self, platforms):
+        if(not self.isActive):
+            return
+
+        if(not self.isMoving):
+            return
+        self.rect.left += self.xvel
+        self.rect.top += self.yvel
+        self.yvel += 0.3
+        self.collide(platforms)
+    
+    def collide(self, platforms):
+        if(not self.isActive):
+            return
+        
+        for p in platforms:
+            if pygame.sprite.collide_rect(self, p):
+                self.isMoving = False
 
 class Camera(object):
     def __init__(self, camera_func, width, height):
@@ -261,6 +325,7 @@ class Platform(Entity):
         Entity.__init__(self)
         self.image = image
         self.rect = Rect(x, y, 32, 32)
+        self.isActive = True
 
     def update(self):
         pass
