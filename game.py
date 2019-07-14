@@ -12,6 +12,7 @@ from actors.explodingSquare import getExplodingSquareEntities
 from actors.platform import Platform
 from actors.squareFragment import SquareFragment
 from entityManager import EntityManager
+from level import Level
 
 WIN_WIDTH = 800
 WIN_HEIGHT = 640
@@ -62,24 +63,10 @@ def main():
     platforms = []
     enemies = []
     x = y = 0
-    level = [
-        "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
-        "P                                P",
-        "P                                P",
-        "P                                P",
-        "P                                P",
-        "P                                P",
-        "P                                P",
-        "P                                P",
-        "P       PPPPPPPPPPP              P",
-        "P                                P",
-        "P                                P",
-        "P                                P",
-        "P     E                          P",
-        "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",]
+    level = Level("level0.lvl")
 
     # build the level
-    for row in level:
+    for row in level.contents:
         for col in row:
             if col == "P":
                 p = Platform(x, y, groundImage)
@@ -92,9 +79,12 @@ def main():
             x += 32
         y += 32
         x = 0
+    
+    print("level width:" + str(level.width) )
+    print("level height:" + str(level.height))
 
-    total_level_width  = len(level[0])*32 # calculate size of level in pixels
-    total_level_height = len(level)*32    # maybe make 32 an constant
+    total_level_width  = level.width * 32 # calculate size of level in pixels
+    total_level_height = level.height * 32    # maybe make 32 an constant
     camera = Camera(complex_camera, total_level_width, total_level_height)
 
     entityManager.addEntity(player)
