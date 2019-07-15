@@ -25,17 +25,13 @@ DEPTH = 32
 FLAGS = 0
 CAMERA_SLACK = 30
 
+PLAYER_COLOR = "#0000FF"
 ENEMY_COLOR = "#FF0000"
 DEAD_COLOR = "#000000"
 
 TILE_SIZE = 32
 
 entityManager = EntityManager(pygame.sprite.Group())
-
-def simple_camera(camera, target_rect):
-        l, t, _, _ = target_rect # l = left,  t = top
-        _, _, w, h = camera      # w = width, h = height
-        return Rect(-l+HALF_WIDTH, -t+HALF_HEIGHT, w, h)
 
 def complex_camera(camera, target_rect):
     # we want to center target_rect
@@ -60,7 +56,7 @@ def main():
 
     up = down = left = right = running = False
 
-    player = Player(TILE_SIZE, TILE_SIZE)
+    player = Player(TILE_SIZE, TILE_SIZE, PLAYER_COLOR, entityManager)
     
     x = y = 0
     level = Level("level0.lvl", TILE_SIZE, spriteMap, entityManager)

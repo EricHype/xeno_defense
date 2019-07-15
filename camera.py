@@ -10,3 +10,8 @@ class Camera(object):
 
     def update(self, target):
         self.state = self.camera_func(self.state, target.rect)
+
+def simple_camera(camera, target_rect):
+        l, t, _, _ = target_rect # l = left,  t = top
+        _, _, w, h = camera      # w = width, h = height
+        return Rect(-l+HALF_WIDTH, -t+HALF_HEIGHT, w, h)

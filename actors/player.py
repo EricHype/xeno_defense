@@ -3,7 +3,7 @@ from pygame import *
 from actors.entity import Entity
 
 class Player(Entity):
-    def __init__(self, x, y):
+    def __init__(self, x, y, color, manager):
         Entity.__init__(self)
         self.jumpVelocity = 10
         self.bounceVelocity = 12
@@ -13,10 +13,12 @@ class Player(Entity):
         self.yvel = 0
         self.onGround = False
         self.image = Surface((32,32))
-        self.image.fill(Color("#0000FF"))
+        self.color = color
+        self.image.fill(Color(self.color))
         self.image.convert()
         self.rect = Rect(x, y, 32, 32)
         self.isActive = True
+        self.manager = manager
 
     def update(self, up, down, left, right, running, platforms, enemies):
         if up:
@@ -73,4 +75,8 @@ class Player(Entity):
                         self.yvel -= 15
                         e.die()
                 else:
-                    print("player dead") 
+                    self.die() 
+    
+    def die(self):
+        self.isActive = False
+        self.manager.killEntity(self)
