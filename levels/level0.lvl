@@ -1,14 +1,31 @@
-PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
-P                                P
-P                                P
-P                                P
-P                                P
-P                                P
-P                                P
-P                                PPPPPP
-P       PPPPPPPPPPP                   P
-P                                     P
-P                                PPPPPP
-P                                P
-P     E                          P
-PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+{
+    "entityMap": ["CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
+                "W                                W",
+                "W                                W",
+                "W                                W",
+                "W                                W",
+                "W                                W",
+                "W                                W",
+                "W                                PPPPPP",
+                "W       PPPPPPPPPPP                   W",
+                "W                                     W",
+                "W                                PPPPPP",
+                "W                                W",
+                "W     E                          W",
+                "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP"],
+    "backgroundMap": ["PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+                    "P                                P",
+                    "P                                P",
+                    "P                                P",
+                    "P                                P",
+                    "P                                P",
+                    "P                                P",
+                    "P                                PPPPPP",
+                    "P       PPPPPPPPPPP                   P",
+                    "P                                     P",
+                    "P                                PPPPPP",
+                    "P                                P",
+                    "P     E                          P",
+                    "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP"]
+    
+}

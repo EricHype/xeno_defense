@@ -13,6 +13,7 @@ from actors.platform import Platform
 from actors.squareFragment import SquareFragment
 from entityManager import EntityManager
 from level import Level
+from spritemap import getSpriteMap
 
 WIN_WIDTH = 800
 WIN_HEIGHT = 640
@@ -26,6 +27,8 @@ CAMERA_SLACK = 30
 
 ENEMY_COLOR = "#FF0000"
 DEAD_COLOR = "#000000"
+
+TILE_SIZE = 32
 
 entityManager = EntityManager(pygame.sprite.Group())
 
@@ -53,40 +56,16 @@ def main():
     pygame.display.set_caption("Use arrows to move!")
     timer = pygame.time.Clock()
 
-    ss = spritesheet.spritesheet('PixelAtlas.png')
-    groundImage = ss.load_image_at((0, 0, 32, 32))
-    skyimage = ss.load_image_at((32, 96, 32, 32))
+    spriteMap = getSpriteMap(TILE_SIZE)
 
     up = down = left = right = running = False
 
-    player = Player(32, 32)
-    platforms = []
-    enemies = []
-    x = y = 0
-    level = Level("level0.lvl")
-
-    # build the level
-    for row in level.contents:
-        for col in row:
-            if col == "P":
-                p = Platform(x, y, groundImage)
-                platforms.append(p)
-                entityManager.addEntity(p)
-            if col == "E":
-                e = Enemy(x,y, ENEMY_COLOR, entityManager)
-                enemies.append(e)
-                entityManager.addEntity(e)
-            x += 32
-        y += 32
-        x = 0
+    player = Player(TILE_SIZE, TILE_SIZE)
     
-    print("level width:" + str(level.width) )
-    print("level height:" + str(level.height))
-
-    total_level_width  = level.width * 32 # calculate size of level in pixels
-    total_level_height = level.height * 32    # maybe make 32 an constant
-    camera = Camera(complex_camera, total_level_width, total_level_height)
-
+    x = y = 0
+    level = Level("level0.lvl", TILE_SIZE, spriteMap, entityManager)
+    camera = Camera(complex_camera, level.pixelWidth, level.pixelHeight)
+ 
     entityManager.addEntity(player)
     while 1:
         timer.tick(60)
@@ -122,18 +101,18 @@ def main():
         # draw background
         for y in range(32):
             for x in range(32):
-                screen.blit(skyimage, (x * 32, y * 32))
+                screen.blit(spriteMap[" "], (x * 32, y * 32))
 
         camera.update(player) # camera follows player. Note that we could also follow any other sprite
 
         # update player, draw everything else
         for e in entityManager.getEntities():
             if type(e) is Player:
-                e.update(up, down, left, right, running, platforms, enemies)
+                e.update(up, down, left, right, running, entityManager.platforms, entityManager.enemies)
             if type(e) is Enemy:
-                e.update(platforms)
+                e.update(entityManager.platforms)
             if(type(e) is SquareFragment):
-                e.update(platforms)
+                e.update(entityManager.platforms)
             # apply the offset to each entity.
             # call this for everything that should scroll,
             # which is basically everything other than GUI/HUD/UI

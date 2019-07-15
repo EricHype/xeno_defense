@@ -4,6 +4,8 @@ import random
 class EntityManager(object):
     def __init__(self, entities):
         self.entites = entities
+        self.platforms = []
+        self.enemies = []
 
     def getEntities(self):
         return self.entites
@@ -20,5 +22,14 @@ class EntityManager(object):
             entity.rect.centery, entity.color, 16, forceMultiplier)
         self.removeEntity(entity)    
         self.entites.add(deathEntities)
+
+    def addPlatform(self, platform):
+        self.platforms.append(platform)
+        self.addEntity(platform)
+
+    def addEnemy(self, enemy):
+        self.enemies.append(enemy)
+        self.addEntity(enemy)
+
 
     

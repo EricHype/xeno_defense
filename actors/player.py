@@ -53,16 +53,15 @@ class Player(Entity):
             if pygame.sprite.collide_rect(self, p):
                 if xvel > 0:
                     self.rect.right = p.rect.left
-                    print("collide right")
                 if xvel < 0:
                     self.rect.left = p.rect.right
-                    print("collide left")
                 if yvel > 0:
                     self.rect.bottom = p.rect.top
                     self.onGround = True
                     self.yvel = 0
                 if yvel < 0:
                     self.rect.top = p.rect.bottom
+                    self.yvel =0
         
         for e in enemies:
             if not e.isActive:
