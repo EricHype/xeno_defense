@@ -46,7 +46,4 @@ class Enemy(Entity):
         self.isActive = False
         self.image.fill(Color("#000000"))
         self.manager.killEntity(self)
-        # entities.add(SquareFragment(self.rect.left, self.rect.top, 16, ENEMY_COLOR, "left", 8, 6))
-        # entities.add(SquareFragment(self.rect.left+16, self.rect.top, 16, ENEMY_COLOR, "right", 8, 3))
-        # entities.add(SquareFragment(self.rect.left, self.rect.top+16, 16, ENEMY_COLOR, "left", 2, 6))
-        # entities.add(SquareFragment(self.rect.left+16, self.rect.top+16, 16, ENEMY_COLOR, "right", 2, 3))
+

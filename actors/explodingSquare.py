@@ -3,20 +3,20 @@ from actors.squareFragment import SquareFragment
 
 #class ExplodingSquare():
     #def __init__(center_x, center_y, rect_color, force_multiplier = 1.0):
-def getExplodingSquareEntities(center_x, center_y, rect_color, fragment_size, force_multiplier = 1.0):
+def getExplodingSquareEntities(center_x, center_y, rect_color, fragment_size, entityManager, force_multiplier = 1.0):
     entities = []
 
     #top left
     entities.append(SquareFragment(center_x - fragment_size, center_y - fragment_size, 
-        fragment_size, rect_color, "left", 8 * force_multiplier, 6 * force_multiplier))
+        fragment_size, rect_color, "left", 8 * force_multiplier, 6 * force_multiplier, entityManager))
     #top right
     entities.append(SquareFragment(center_x, center_y - fragment_size, fragment_size, 
-        rect_color, "right", 8 * force_multiplier, 3 * force_multiplier))
+        rect_color, "right", 8 * force_multiplier, 3 * force_multiplier, entityManager))
     #bottom left
     entities.append(SquareFragment(center_x - fragment_size, center_y, fragment_size, 
-        rect_color, "left", 2 * force_multiplier, 6 * force_multiplier))
+        rect_color, "left", 2 * force_multiplier, 6 * force_multiplier, entityManager))
     #bottom right
     entities.append(SquareFragment(center_x, center_y, fragment_size, rect_color, 
-        "right", 2 * force_multiplier, 3 * force_multiplier))
+        "right", 2 * force_multiplier, 3 * force_multiplier, entityManager))
 
     return entities

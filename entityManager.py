@@ -19,7 +19,7 @@ class EntityManager(object):
     def killEntity(self, entity):
         forceMultiplier = random.uniform(0.3, 3.0)
         deathEntities = getExplodingSquareEntities(entity.rect.centerx, 
-            entity.rect.centery, entity.color, 16, forceMultiplier)
+            entity.rect.centery, entity.color, 16, self, forceMultiplier)
         self.removeEntity(entity)    
         self.entites.add(deathEntities)
 
