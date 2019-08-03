@@ -31,7 +31,8 @@ class SquareFragment(Entity):
             self.rect.top += self.yvel
             self.yvel += 0.3
             self.collide(platforms)
-
+            self.xvel -= 1
+        
         ticks = pygame.time.get_ticks()
         print("Ticks: {0}, EndTime: {1}".format(ticks, self.endTime))
         if(ticks >= self.endTime):
